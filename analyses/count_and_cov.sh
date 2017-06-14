@@ -10,7 +10,7 @@ fi
 
 QCUT=
 KEEP=
-SOFT
+SOFT=
 while getopts skq: opt
 do
 case ${opt} in
