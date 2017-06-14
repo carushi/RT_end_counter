@@ -7,23 +7,23 @@ This repository is to construct Docker image which contains samtools, bedtools2,
 ## Example
 
 ```
-docker pull carushi/RT_end_counter
+docker pull carushi/rt_end_counter
 ```
 
 ```
-docker -it run carushi/RT_end_counter /bin/bash
+docker -it run carushi/rt_end_counter /bin/bash
 ```
 
 ```
 docker cp host/directory/test.bam container_id(e.g.aabbcc112233):/docker/directory/
 ```
 ```
-analyses/count_and_cov.sh /docker/directory/test.bam
+count_and_cov.sh /docker/directory/test.bam
 
-analyses/count_and_cov.sh -q 10 /docker/directory/test.bam
+count_and_cov.sh -q 10 /docker/directory/test.bam
 # Reads whose quality is less than 10 are filtered.
 
-analyses/count_and_cov.sh -k /docker/directory/test.bam
+count_and_cov.sh -k /docker/directory/test.bam
 # Keeps temporary files for debug.
 
 ```
@@ -33,7 +33,6 @@ less test_ctss.bed
 # RT end count
 less test_cov.bed
 # Coverage count
-
 ```
 
 @ 2017 carushi
