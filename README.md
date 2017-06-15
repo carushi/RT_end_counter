@@ -1,10 +1,10 @@
-# RT\_end\_counter
+## RT\_end\_counter
 
-## Purpose
+### Purpose
 This repository is to construct Docker image which contains samtools, bedtools2, and RT end counter for high-throughput structure analyses such as icSHAPE, PARS, and DMS-seq.
 
 
-## Example
+### Example
 
 ```
 docker pull carushi/rt_end_counter

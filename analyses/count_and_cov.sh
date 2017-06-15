@@ -43,13 +43,14 @@ TMPPRE="${base}_l15filt_s1"
 QTMPPRE="${base}_l15q${QCUT}filt_s1"
 awk_soft_5p=" awk 'BEGIN{OFS=\"\\t\"}{if(\$6 ~ /^1S/ || \$6 ~ /^[0-9]*M/){ print }else if (NF == 3){print}}' "
 awk_soft_3p=" awk 'BEGIN{OFS=\"\\t\"}{if(\$6 ~ /1S$/ || \$6 ~ /[0-9]*M$/){ print }else if (NF == 3){print}}' "
+TMPBAM="${base}_tmp_l15_s1"
 else
 TMPPRE="${base}_l15filt"
 QTMPPRE="${base}_l15q${QCUT}filt"
 awk_soft_5p=" cat - "
 awk_soft_3p=" cat - "
+TMPBAM="${base}_tmp_l15"
 fi
-TMPBAM="temp.bam"
 
 samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | eval ${awk_soft_5p} | samtools view -Shb - > ${TMPBAM}
 samtools sort ${TMPBAM} ${TMPPRE}
