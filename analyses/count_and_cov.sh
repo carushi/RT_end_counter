@@ -72,17 +72,13 @@ samtools view -hb ${seq}_minus.bam | bedtools genomecov -bga -strand - -ibam std
 
 #ctss
 
-samtools view -hb ${seq}_plus.bam | bamToBed -i stdin | tee ${seq}_plus_bctss.txt \
-| awk 'BEGIN{OFS="\t"}{if($6=="+"){print $1,$2,$2+1}}' \
-| sort -k1,1 -k2,2n \
-| groupBy -i stdin -g 1,2 -c 3 -o count \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $1,$2,$2+1,x,$3,"+"}' > ${seq}_ctss.bed
+samtools view -hb ${seq}_plus.bam | bamToBed -i stdin \
+| awk 'BEGIN{OFS="\t"}{if($6=="+"){print $1,$2,$2+1}}' | uniq -c \
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$3+1,x,$1,"+"}' > ${seq}_ctss.bed
 
-samtools view -h -u ${seq}_minus.bam | bamToBed -i stdin | tee ${seq}_minus_bctss.txt \
-| awk 'BEGIN{OFS="\t"}{if($6=="-" && $2 ){print $1,$3-1,$3}}' \
-| sort -k1,1 -k2,2n \
-| groupBy -i stdin -g 1,2 -c 3 -o count \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $1,$2-1,$2,x,$3,"-"}' >> ${seq}_ctss.bed
+samtools view -h -u ${seq}_minus.bam | bamToBed -i stdin  \
+| awk 'BEGIN{OFS="\t"}{if($6=="-" && $3 > 0){print $1,$3-1,$3}}'| uniq -c \
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3-1,$3,x,$1,"-"}' >> ${seq}_ctss.bed
 
 
 done
@@ -93,8 +89,8 @@ rm ${QTMPPRE}.bam
 rm ${QTMPPRE}_plus.bam
 rm ${QTMPPRE}_minus.bam
 rm $TMPBAM
-rm ${QTMPPRE}_plus_bctss.txt
-rm ${QTMPPRE}_minus_bctss.txt
+#rm ${QTMPPRE}_plus_bctss.txt
+#rm ${QTMPPRE}_minus_bctss.txt
 fi
 
 fi
