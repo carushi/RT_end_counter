@@ -11,7 +11,7 @@ docker pull carushi/rt_end_counter
 ```
 
 ```
-docker -it run carushi/rt_end_counter /bin/bash
+docker run -it carushi/rt_end_counter /bin/bash
 ```
 
 ```

@@ -68,7 +68,7 @@ samtools view -h -f 16 ${seq}.bam | awk 'BEGIN{OFS="\t"}{if($6 ~ /1S$/ || $6 ~ /
 
 #coverage
 samtools view -hb  ${seq}_plus.bam | bedtools genomecov -bga -strand + -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "+")}' | sort -k1,1 -k2,2n > ${seq}_cov.bed
-samtools view -hb ${seq}_plus.bam | bedtools genomecov -bga -strand - -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "-")}' | sort -k1,1 -k2,2n >> ${seq}_cov.bed
+samtools view -hb ${seq}_minus.bam | bedtools genomecov -bga -strand - -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "-")}' | sort -k1,1 -k2,2n >> ${seq}_cov.bed
 
 #ctss
 
@@ -89,17 +89,11 @@ done
 
 if [ "${KEEP}" = false ]
 then
-rm ${TMPPRE}.bam
-rm ${TMPPRE}_plus.bam
-rm ${TMPPRE}_minus.bam
 rm ${QTMPPRE}.bam
 rm ${QTMPPRE}_plus.bam
 rm ${QTMPPRE}_minus.bam
-rm ${QTMPPRE}_plus.bam
 rm $TMPBAM
-rm ${TMPPRE}_plus_bctss.txt
 rm ${QTMPPRE}_plus_bctss.txt
-rm ${TMPPRE}_minus_bctss.txt
 rm ${QTMPPRE}_minus_bctss.txt
 fi
 
