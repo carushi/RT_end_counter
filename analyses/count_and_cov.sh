@@ -54,17 +54,17 @@ fi
 
 if [ "${QCUT}" = "0" ]
 then
-samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | eval ${awk_soft_5p} | samtools view -Shb - > ${TMPBAM}
+samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${TMPBAM}
 samtools sort ${TMPBAM} ${QTMPPRE}
 else
-samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | eval ${awk_soft_3p} | samtools view -Shb - > ${TMPBAM}
+samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${TMPBAM}
 samtools sort ${TMPBAM} ${QTMPPRE}
 fi
 
 for seq in $QTMPPRE
 do
-samtools view -h -F 16 ${seq}.bam | awk 'BEGIN{OFS="\t"}{if($6 ~ /^1S/ || $6 ~ /^[0-9]*M/){print} else if(NF == 3){print}}' | samtools view -Shb - > ${seq}_plus.bam
-samtools view -h -f 16 ${seq}.bam | awk 'BEGIN{OFS="\t"}{if($6 ~ /1S$/ || $6 ~ /[0-9]*M$/) { print } else if (NF == 3){print}}' | samtools view -Shb - > ${seq}_minus.bam
+samtools view -h -F 16 ${seq}.bam | eval ${awk_soft_5p} | samtools view -Shb - > ${seq}_plus.bam
+samtools view -h -f 16 ${seq}.bam | eval ${awk_soft_3p} | samtools view -Shb - > ${seq}_minus.bam
 
 #coverage
 samtools view -hb  ${seq}_plus.bam | bedtools genomecov -bga -strand + -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "+")}' | sort -k1,1 -k2,2n > ${seq}_cov.bed
