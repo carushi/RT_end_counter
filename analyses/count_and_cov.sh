@@ -78,7 +78,7 @@ samtools view -hb ${seq}_plus.bam | bamToBed -i stdin \
 
 samtools view -h -u ${seq}_minus.bam | bamToBed -i stdin  \
 | awk 'BEGIN{OFS="\t"}{if($6=="-" && $3 > 0){print $1,$3-1,$3}}'| uniq -c \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3-1,$3,x,$1,"-"}' >> ${seq}_ctss.bed
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$4,x,$1,"-"}' >> ${seq}_ctss.bed
 
 
 done
