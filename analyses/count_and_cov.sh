@@ -4,7 +4,7 @@
 source ~/.bashrc
 if [ $# -eq 0 ]
 then
-echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> <map1.bam> <map2.bam> ... i"
+echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> -l <the minimum length to be filtered> <map1.bam> <map2.bam> ... i"
 exit 1;
 fi
 
@@ -12,7 +12,7 @@ QCUT=
 KEEP=
 SOFT=
 LCUT=
-while getopts skq: opt
+while getopts skq:l: opt
 do
 case ${opt} in
 q) QCUT=${OPTARG};;
