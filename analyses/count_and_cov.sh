@@ -11,12 +11,14 @@ fi
 QCUT=
 KEEP=
 SOFT=
+LCUT=
 while getopts skq: opt
 do
 case ${opt} in
 q) QCUT=${OPTARG};;
 k) KEEP=true;;
 s) SOFT=true;;
+l) LCUT=${OPTARG};;
 *) usage;;
 esac
 done
@@ -25,6 +27,7 @@ done
 if [ "${QCUT}" = "" ]; then QCUT=0; fi
 if [ "${KEEP}" = "" ]; then KEEP=false; fi
 if [ "${SOFT}" = "" ]; then SOFT=false; fi
+if [ "${LCUT}" = "" ]; then LCUT=300; fi
 
 for var in "$@"
 do
@@ -54,10 +57,10 @@ fi
 
 if [ "${QCUT}" = "0" ]
 then
-samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${TMPBAM}
+    samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${TMPBAM}
 samtools sort ${TMPBAM} ${QTMPPRE}
 else
-samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${TMPBAM}
+    samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${TMPBAM}
 samtools sort ${TMPBAM} ${QTMPPRE}
 fi
 
