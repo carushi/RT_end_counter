@@ -8,6 +8,7 @@ iexit 1;
 fi
 
 QCUT=
+LCUT=
 KEEP=
 SOFT=
 while getopts skq: opt
@@ -15,6 +16,7 @@ do
 case ${opt} in
 q) QCUT=${OPTARG};;
 k) KEEP=true;;
+l) LCUT=${OPTARG};;
 *) usage;;
 esac
 done
@@ -22,6 +24,7 @@ done
 
 if [ "${QCUT}" = "" ]; then QCUT=0; fi
 if [ "${KEEP}" = "" ]; then KEEP=false; fi
+if [ "${LCUT}" = "" ]; then LCUT=300; fi
 SOFT=true;
 
 for var in "$@"
@@ -54,16 +57,16 @@ fi
 
 if [ "${QCUT}" = "0" ]
 then
-samtools view -F 4 -h${option} $var |  awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${QTMPPRE}.bam
+    samtools view -F 4 -h${option} $var |  awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${QTMPPRE}.bam
 else
-samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || length($10) >= 15) { print }}' | samtools view -Shb - > ${QTMPPRE}.bam
+    samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${QTMPPRE}.bam
 fi
 
 for seq in $QTMPPRE
 do
-samtools view -h -F 16 ${seq}.bam | eval ${awk_soft_5p} > ${seq}_count.txt
-samtools view -h -f 16 ${seq}.bam | eval ${awk_soft_3p} >> ${seq}_count.txt
-sort -n ${seq}_count.txt | uniq -c | sed 's/^ *//g' > ${seq}_soft_count.txt
+samtools view -h -F 16 ${seq}.bam | eval ${awk_soft_5p} > ${seq}.tmp
+samtools view -h -f 16 ${seq}.bam | eval ${awk_soft_3p} >> ${seq}.tmp
+sort -n ${seq}.tmp | uniq -c | sed 's/^ *//g' > ${seq}_soft_count.txt
 
 
 done
@@ -71,7 +74,7 @@ done
 if [ "${KEEP}" = false ]
 then
 rm ${QTMPPRE}.bam
-rm ${QTMPPRE}_count.txt
+rm ${QTMPPRE}.tmp
 fi
 
 fi
