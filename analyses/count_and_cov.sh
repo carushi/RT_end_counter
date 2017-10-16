@@ -57,13 +57,12 @@ fi
 
 if [ "${QCUT}" = "0" ]
 then
-    samtools view -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${TMPBAM}
-samtools sort ${TMPBAM} ${QTMPPRE}
+    samtools view -F 4 -h${option} $var | awk -v lcut="$LCUT" 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < lcut)) { print }}' | samtools view -Shb - > ${TMPBAM}
+    samtools sort ${TMPBAM} ${QTMPPRE}
 else
-    samtools view -q $QCUT -F 4 -h${option} $var | awk 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < $LCUT)) { print }}' | samtools view -Shb - > ${TMPBAM}
-samtools sort ${TMPBAM} ${QTMPPRE}
+    samtools view -q $QCUT -F 4 -h${option} $var | awk -v lcut="$LCUT" 'BEGIN{OFS="\t"}{if(NF == 3 || (length($10) >= 15 && length($10) < lcut)) { print }}' | samtools view -Shb - > ${TMPBAM}
+    samtools sort ${TMPBAM} ${QTMPPRE}
 fi
-
 for seq in $QTMPPRE
 do
 samtools view -h -F 16 ${seq}.bam | eval ${awk_soft_5p} | samtools view -Shb - > ${seq}_plus.bam
