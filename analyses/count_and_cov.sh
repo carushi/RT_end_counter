@@ -4,7 +4,7 @@
 source ~/.bashrc
 if [ $# -eq 0 ]
 then
-echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> -l <the minimum length to be filtered> <map1.bam> <map2.bam> ... i"
+echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> -l <the minimum length to be filtered out> <map1.bam> <map2.bam> ... i"
 exit 1;
 fi
 
