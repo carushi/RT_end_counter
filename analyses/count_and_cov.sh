@@ -8,7 +8,6 @@ then
 echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> -l <the minimum length to be filtered out> <map1.bam> <map2.bam> ... i"
 exit 1;
 fi
-
 QCUT=
 KEEP=
 SOFT=
@@ -33,6 +32,7 @@ if [ "${LCUT}" = "" ]; then LCUT=300; fi
 for var in "$@"
 do
 if [[ $var =~ sam$ || $var =~ bam$ ]]; then
+dir=$(dirname $var)
 file=${var##*/}
 base=${file%%.*}
 option="S"
@@ -70,18 +70,18 @@ samtools view -h -F 16 ${seq}.bam | eval ${awk_soft_5p} | samtools view -Shb - >
 samtools view -h -f 16 ${seq}.bam | eval ${awk_soft_3p} | samtools view -Shb - > ${seq}_minus.bam
 
 #coverage
-samtools view -hb  ${seq}_plus.bam | bedtools genomecov -bga -strand + -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "+")}' | sort -k1,1 -k2,2n > ${seq}_cov.bed
-samtools view -hb ${seq}_minus.bam | bedtools genomecov -bga -strand - -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "-")}' | sort -k1,1 -k2,2n >> ${seq}_cov.bed
+samtools view -hb  ${seq}_plus.bam | bedtools genomecov -bga -strand + -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "+")}' | sort -k1,1 -k2,2n > ${dir}/${seq}_cov.bed
+samtools view -hb ${seq}_minus.bam | bedtools genomecov -bga -strand - -ibam stdin | awk -v x="$base" '{printf("%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, x, $4, "-")}' | sort -k1,1 -k2,2n >> ${dir}/${seq}_cov.bed
 
 #ctss
 
 samtools view -hb ${seq}_plus.bam | bamToBed -i stdin \
 | awk 'BEGIN{OFS="\t"}{if($6=="+"){print $1,$2,$2+1}}' | uniq -c \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$3+1,x,$1,"+"}' > ${file}/${seq}_ctss.bed
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$3+1,x,$1,"+"}' > ${dir}/${seq}_ctss.bed
 
 samtools view -h -u ${seq}_minus.bam | bamToBed -i stdin  \
 | awk 'BEGIN{OFS="\t"}{if($6=="-" && $3 > 0){print $1,$3-1,$3}}'| uniq -c \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$4,x,$1,"-"}' >> ${file}/${seq}_ctss.bed
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$4,x,$1,"-"}' >> ${dir}/${seq}_ctss.bed
 
 
 done
