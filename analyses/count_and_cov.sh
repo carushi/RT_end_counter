@@ -2,7 +2,8 @@
 
 #This script was written based on bam_to_ctss.sh in moirai packages
 source ~/.bashrc
-if [ $# -eq 0 ]
+echo ">" $# options: $@
+if [ $# -eq 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
 then
 echo "Usage is : $0 -s (allow only 1 soft clip or perfect match at 5' end) -k (keep all temporary files) -q <mapping quality cutoff> -l <the minimum length to be filtered out> <map1.bam> <map2.bam> ... i"
 exit 1;
@@ -76,11 +77,11 @@ samtools view -hb ${seq}_minus.bam | bedtools genomecov -bga -strand - -ibam std
 
 samtools view -hb ${seq}_plus.bam | bamToBed -i stdin \
 | awk 'BEGIN{OFS="\t"}{if($6=="+"){print $1,$2,$2+1}}' | uniq -c \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$3+1,x,$1,"+"}' > ${seq}_ctss.bed
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$3+1,x,$1,"+"}' > ${file}/${seq}_ctss.bed
 
 samtools view -h -u ${seq}_minus.bam | bamToBed -i stdin  \
 | awk 'BEGIN{OFS="\t"}{if($6=="-" && $3 > 0){print $1,$3-1,$3}}'| uniq -c \
-| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$4,x,$1,"-"}' >> ${seq}_ctss.bed
+| awk -v x="$base" 'BEGIN{OFS="\t"}{print $2,$3,$4,x,$1,"-"}' >> ${file}/${seq}_ctss.bed
 
 
 done
