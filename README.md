@@ -5,11 +5,13 @@ This repository is associated with [the docker image](https://hub.docker.com/r/c
 
 
 ### Example
+You can choose one way from two ways shown below.
+One is using a docker image in an interactive mode, and another is in a command line-like mode.
 1. Analyze on a docker container
 
 ```
 docker pull carushi/rt_end_counter
-docker run --name reactIDR -it carushi/rt_end_counter
+docker run --rm --name reactIDR -it carushi/rt_end_counter
 ```
 
 ```
